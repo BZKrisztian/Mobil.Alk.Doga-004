@@ -7,7 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
+import java.net.URL;
+    
 /**
  * JavaFX App
  */
@@ -17,22 +18,35 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("mainScene"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
+        try {
+            trySetRoot(fxml);
+        } catch (Exception e) {
+            System.err.println("Failed to load properly. :c" + fxml);
+            System.err.println(e.getMessage());
+        }
+    }
+    public static void trySetRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        String resourcepath = "/com/example/" + fxml + ".fxml";
+        URL url = App.class.getResource(resourcepath);
+        if (url == null) {
+            throw new IOException("Couldn't find " + resourcepath);
+        }
+        FXMLLoader fxmlLoader = new FXMLLoader(url);
         return fxmlLoader.load();
     }
 
     public static void main(String[] args) {
-        launch();
+        Application.launch();
     }
 
 }
